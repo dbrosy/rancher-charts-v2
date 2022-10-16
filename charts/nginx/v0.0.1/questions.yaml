@@ -1,15 +1,8 @@
 categories:
   - Server
-questions:
 
-# Namespace
-  - variable: metadata.namespace
-    default: demo
-    description: ''
-    type: string
-    required: true
-    label: 'nginx namespace'
-    group: Metadata
+namespace: learn
+questions:
 
 # Images
   - variable: image.repository

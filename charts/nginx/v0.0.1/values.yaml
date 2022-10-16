@@ -15,9 +15,6 @@ nameOverride: ""
 namespaceOverride: ""
 fullnameOverride: ""
 
-metadata:
-  namespace: demo
-
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
