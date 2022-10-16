@@ -1,4 +1,11 @@
 {{/*
+Expand the namespace of the chart.
+*/}}
+{{- define "nginx.namespace" -}}
+{{- default .Chart.Namespace .Values.namespaceOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
 Expand the name of the chart.
 */}}
 {{- define "nginx.name" -}}
