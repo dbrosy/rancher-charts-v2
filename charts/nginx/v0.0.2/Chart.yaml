@@ -5,4 +5,4 @@ type: application
 version: 0.0.2
 appVersion: "1.23.4"
 icon: https://raw.githubusercontent.com/dbrosy/rancher-charts-v2/main/charts/nginx/nginx-626x144.png
-catalog.cattle.io/namespace: Learning
+catalog.cattle.io/namespace: learning
