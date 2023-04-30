@@ -1,9 +1,9 @@
-# Node-Red - Nodered 2.x
+# Node-Red - Nodered 3.x.x
 
-[Nodered]Nodered 2.x
+[Nodered]Nodered 3.x.x
 
 
 ## Notable changes
 
-### v2.1.2
+### v3.0.2
 **Warning:** Base config.
