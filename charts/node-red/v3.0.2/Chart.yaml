@@ -1,0 +1,14 @@
+apiVersion: v2
+appVersion: 3.0.2
+description: Node-RED is low-code programming for event-driven applications
+name: node-red
+keywords:
+  - nodered
+  - node-red
+home: https://www.influxdata.com/products/influxdb-overview/influxdb-2-0/
+type: application
+version: 3.0.2
+maintainers:
+  - name: dbrosy
+    email: code@brosy.com
+icon: https://nodered.org/about/resources/media/node-red-icon-2.png
