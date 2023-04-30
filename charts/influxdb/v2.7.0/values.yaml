@@ -179,7 +179,7 @@ ingress:
   tls: false
   secretName: influxdb-or-foobar-dev-tls # only needed if tls above is true
   hostname: influxdb.or.foobar.dev
-  annotations: 
+  annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     kubernetes.io/tls-acme: "true"
   path: /
