@@ -1,0 +1,14 @@
+apiVersion: v2
+appVersion: 9.4.9
+description: The leading tool for querying and visualizing time series and metrics.
+name: grafana
+home: https://grafana.net
+keywords:
+  - visualization
+  - metrics
+type: application
+version: 9.4.9
+maintainers:
+  - name: dbrosy
+    email: code@brosy.com
+icon: https://raw.githubusercontent.com/grafana/grafana/master/public/img/logo_transparent_400x.png
