@@ -1,0 +1,8 @@
+apiVersion: v1
+appVersion: "0.0.1"
+description: |
+  Helm chart developent for rancher
+name: helm-chart-develop
+version: 0.0.1
+icon: https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png
+kubeVersion: '< 1.22.0-0'
