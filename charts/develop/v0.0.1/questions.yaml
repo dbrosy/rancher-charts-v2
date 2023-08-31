@@ -1,0 +1,92 @@
+categories:
+  - Server
+
+namespace: learn
+questions:
+
+# Images
+  - variable: image.repository
+    default: nginx
+    description: ''
+    type: string
+    required: true
+    label: 'nginx repository'
+    group: Images
+  - variable: image.tag
+    default: latest
+    description: ''
+    type: string
+    required: true
+    label: 'nginx tag'
+    group: Images
+
+
+
+# Services and Load Balancing
+  - variable: ingress.enabled
+    default: true
+    description: ''
+    type: boolean
+    label: 'nginx ingress enabled'
+    show_subquestion_if: true
+    group: 'Services and Load Balancing'
+    subquestions:
+      - variable: ingress.tls
+        default: false
+        description: ''
+        type: boolean
+        required: true
+        label: 'nginx ingress tls'
+      - variable: ingress.hosts.host
+        default: xip.io
+        description: ''
+        type: hostname
+        required: true
+        label: 'nginx ingress hostname'
+      - variable: ingress.hosts.paths.path
+        default: /
+        description: ''
+        type: string
+        required: true
+        label: 'nginx ingress path'
+      - variable: ingress.hosts.issuer.name
+        default: letsencrypt-staging
+        description: ''
+        type: enum
+        show_if: ingress.nginx.tls=true
+        options:
+          - none
+          - letsencrypt-staging
+          - letsencrypt-prod
+        required: true
+        label: 'nginx ingress issuer name'
+      - variable: ingress.nginx.certificate
+        default: ''
+        description: ''
+        type: string
+        show_if: ingress.nginx.tls=true&&ingress.nginx.issuer.name=none
+        required: false
+        label: 'nginx ingress certificate'
+  - variable: service.nginx.type
+    default: NodePort
+    description: ''
+    type: enum
+    show_if: ingress.enabled=false
+    options:
+      - ClusterIP
+      - NodePort
+      - LoadBalancer
+    required: true
+    label: 'nginx service type'
+    show_subquestion_if: NodePort
+    group: 'Services and Load Balancing'
+    subquestions:
+      - variable: service.nodePorts.http
+        default: ''
+        description: ''
+        type: int
+        min: 30000
+        max: 32767
+        show_if: ingress.enabled=false
+        label: 'nginx http port'
+

@@ -1,0 +1,7 @@
+apiVersion: v2
+name: develop
+description: A learning helm chart - setting deployment and namespace
+type: application
+version: 0.0.1
+appVersion: "0.1.0"
+icon: https://raw.githubusercontent.com/dbrosy/rancher-charts-v2/main/charts/develop/nginx-626x144.png
