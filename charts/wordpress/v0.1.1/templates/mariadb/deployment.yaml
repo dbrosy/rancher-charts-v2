@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ (split "/" $.Template.BasePath)._0 }}
+  name: mariadb
   labels:
     helm.sh/chart: test-0.1.0
     app.kubernetes.io/name: {{ .Release.Name }}-mariadb
     app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/version: "Values.mariadb.image.tag"
+    app.kubernetes.io/version: "{{ .Values.mariadb.image.tag }}"
     app.kubernetes.io/managed-by: Helm
 spec:
   {{- if not .Values.mariadb.autoscaling.enabled }}
