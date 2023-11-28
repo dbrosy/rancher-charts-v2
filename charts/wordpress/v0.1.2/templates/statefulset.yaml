@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "wordpress.fullname" . }}
+  labels: {{ include "wordpress.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "wordpress.selectorLabels" . | nindent 6 }}
+  serviceName: "{{ include "wordpress.fullname" . }}"
+  template:
+    metadata:
+      labels:
+      {{- include "wordpress.selectorLabels" . | nindent 8 }}
+      annotations:
+      {{- toYaml .Values.podAnnotations | nindent 8 }}
+    spec:
+      volumes:
+        - name: data
+        {{- if .Values.persistence.enabled }}
+          {{- if not (empty .Values.persistence.name) }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.name }}
+          {{- else }}
+          persistentVolumeClaim:
+            claimName: {{ template "wordpress.fullname" . }}
+          {{- end }}
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+        - configMap:
+            defaultMode: 420
+            name: {{ template "wordpress.fullname" . }}
+          name: settings
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: {{ .Values.service.portName }}
+              containerPort: 80
+              protocol: TCP
+          env:
+            - name: WORDPRESS_DB_HOST
+              value: "{{ .Values.mariadb.wordpress_db_host }}"
+            - name: WORDPRESS_DB_USER
+              value: "{{ .Values.mariadb.wordpress_db_user }}"
+            - name: WORDPRESS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.mariadb.wordpress_db_password }}
+                  name: {{ .Values.mariadb.wordpress_db_password -}}
+                  {{ else }}
+                  name: {{ template "wordpress.fullname" . }}-auth
+                  {{- end }}
+                  key: wordpress-db-password
+            {{- with .Values.extraEnvs }}
+            {{ toYaml . | indent 12 }}
+            {{- end }}
+            # Extra environment variables from .Values.env
+            {{- with .Values.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.securityContext }}
+          securityContext:
+            {{ toYaml .Values.securityContext | nindent 12 }}
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.livenessProbePath }}
+              port: http
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.readinessProbePath }}
+              port: http
+          volumeMounts:
+          - mountPath: {{ .Values.persistence.mountPath }}
+            name: data
+          - mountPath: /data/settings.js
+            name: settings
+            subPath: settings.js                     
+          resources:
+            {{ .Values.resources | toYaml | nindent 12 | trim }}
+
+      {{- if .Values.securityContext.runAsGroup }}
+      securityContext:
+        fsGroup: {{ .Values.securityContext.runAsGroup }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{ toYaml . | nindent 8 | trim }}
+      {{- end }}
+
+      {{- with .Values.affinity }}
+      affinity:
+        {{ toYaml . | nindent 8 | trim }}
+      {{- end }}
+
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{ toYaml . | nindent 8 | trim }}
+      {{- end }}
