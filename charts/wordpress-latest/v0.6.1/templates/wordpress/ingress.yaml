@@ -1,0 +1,56 @@
+{{- if .Values.wordpress.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ (split "/" $.Template.Name)._2 }}
+  labels:
+    {{- include "wordpress.labels" . | nindent 4 }}
+  {{- with .Values.wordpress.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.wordpress.ingress.className }}
+  {{- if .Values.wordpress.ingress.tls }}
+  tls:
+    {{- range .Values.wordpress.ingress.tls }}
+    - hosts:
+        - {{ $.Release.Name | replace "-" "." | quote }}
+        {{- if $.Values.wordpress.ingress.enableWWWHost }}
+        - {{ printf "www.%s" $.Release.Name | replace "-" "." | quote }}
+        {{- end }}
+      secretName: {{ $.Release.Name | replace "-" "." }}-tls
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.wordpress.ingress.hosts }}
+    - host: {{ $.Release.Name | replace "-" "." | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: wordpress
+                port:
+                  number: 80
+          {{- end }}
+    {{- end }}
+    {{- if $.Values.wordpress.ingress.enableWWWHost }}
+    {{- range .Values.wordpress.ingress.hosts }}
+    - host: {{ printf "www.%s" $.Release.Name | replace "-" "." | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: wordpress
+                port:
+                  number: 80
+          {{- end }}
+    {{- end }}

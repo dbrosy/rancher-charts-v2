@@ -1,1 +1,0 @@
-# Wordpress Helm chart

@@ -1,0 +1,19 @@
+global:
+
+mariadb:
+  replicaCount: 1
+
+  image:
+    repository: mariadb
+    tag: 10.11.5
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 3306
+
+  persistence:
+    enabled: true
+    size: 8Gi
+
+  mysql_root_password: mariadb

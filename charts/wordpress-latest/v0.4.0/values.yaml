@@ -1,0 +1,55 @@
+global:
+
+mariadb:
+  replicaCount: 1
+
+  image:
+    repository: mariadb
+    tag: 10.11.5
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 3306
+
+  persistence:
+    enabled: true
+    size: 8Gi
+
+  mysql_root_password: mariadb
+
+phpmyadmin:
+  replicaCount: 1
+
+  image:
+    repository: phpmyadmin
+    tag: 5.2.1
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  persistence:
+    enabled: true
+    size: 1Gi
+
+  pma_host: mariadb
+
+redis:
+  replicaCount: 1
+
+  image:
+    repository: redis
+    tag: 7.2.1
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 6379
+
+  persistence:
+    enabled: true
+    size: 1Gi
+
+  mysql_root_password: mariadb

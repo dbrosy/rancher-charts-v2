@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ (split "/" $.Template.Name)._2 }}
+spec:
+  replicas: {{ .Values.mariadb.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ (split "/" $.Template.Name)._2 }}
+  template:
+    metadata:
+      labels:
+        app: {{ (split "/" $.Template.Name)._2 }}
+    spec:
+      containers:
+      - name: {{ (split "/" $.Template.Name)._2 }}
+        image: "{{ .Values.mariadb.image.repository }}:{{ .Values.mariadb.image.tag }}"
+        imagePullPolicy: {{ .Values.mariadb.image.pullPolicy }}
+        env:          
+          - name: "MYSQL_ROOT_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                key:  mysql_root_password
+                name: {{ (split "/" $.Template.Name)._2 }}-auth
+        ports:
+        - containerPort: {{ .Values.mariadb.service.port }}
+          name: {{ (split "/" $.Template.Name)._2 }}

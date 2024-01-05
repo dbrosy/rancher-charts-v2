@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ (split "/" $.Template.Name)._2 }}
+spec:
+  replicas: {{ .Values.wordpress.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ (split "/" $.Template.Name)._2 }}
+  template:
+    metadata:
+      labels:
+        app: {{ (split "/" $.Template.Name)._2 }}
+    spec:
+      containers:
+      - name: {{ (split "/" $.Template.Name)._2 }}
+        image: "{{ .Values.wordpress.image.repository }}:{{ .Values.wordpress.image.tag }}"
+        imagePullPolicy: {{ .Values.wordpress.image.pullPolicy }}
+        env:          
+          - name: "WORDPRESS_DB_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                key:  wordpress_db_password
+                name: {{ (split "/" $.Template.Name)._2 }}-auth
+          - name: "WORDPRESS_DB_HOST"
+            value: mariadb
+          - name: "WORDPRESS_DB_USER"
+            value: wordpress
+        ports:
+        - containerPort: {{ .Values.wordpress.service.port }}
+          name: {{ (split "/" $.Template.Name)._2 }}
+        volumeMounts:
+          - mountPath: /var/www/html
+            name: {{ (split "/" $.Template.Name)._2 }}-data
+      volumes:
+        - name: {{ (split "/" $.Template.Name)._2 }}-data
+          persistentVolumeClaim:
+            claimName: {{ (split "/" $.Template.Name)._2 }}

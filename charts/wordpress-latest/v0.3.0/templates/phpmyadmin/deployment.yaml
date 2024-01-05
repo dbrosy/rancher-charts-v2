@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ (split "/" $.Template.Name)._2 }}
+spec:
+  replicas: {{ .Values.mariadb.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ (split "/" $.Template.Name)._2 }}
+  template:
+    metadata:
+      labels:
+        app: {{ (split "/" $.Template.Name)._2 }}
+    spec:
+      containers:
+      - name: {{ (split "/" $.Template.Name)._2 }}
+        image: "{{ .Values.phpmyadmin.image.repository }}:{{ .Values.phpmyadmin.image.tag }}"
+        imagePullPolicy: {{ .Values.phpmyadmin.image.pullPolicy }}
+        env:          
+          - name: "PMA_HOST"
+            valueFrom:
+              secretKeyRef:
+                key:  pma_host
+                name: {{ (split "/" $.Template.Name)._2 }}-auth
+        ports:
+        - containerPort: {{ .Values.phpmyadmin.service.port }}
+          name: {{ (split "/" $.Template.Name)._2 }}

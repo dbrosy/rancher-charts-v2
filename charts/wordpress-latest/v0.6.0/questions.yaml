@@ -1,0 +1,43 @@
+questions:
+- variable: global.rbac.pspEnabled
+  default: "false"
+  description: "Flag to enable or disable the installation of PodSecurityPolicies by this chart in the target cluster. If the cluster is running Kubernetes 1.25+, you must update this value to false."
+  label: "Enable PodSecurityPolicies"
+  type: boolean
+  group: "General"
+- variable: global.tlsIssuerEmail
+  label: Issuer Email Receiver
+  description: "Email address to receive the certificate notification emails send by the `letsencrypt-production` issuer"
+  type: string
+  required: false
+  group: "Advanced"
+- variable: certManagerNamespace
+  label: Cert-manager namespace
+  description: "Namespace where cert-manager is installed in"
+  type: string
+  required: false
+  group: "Extras"
+- variable: useCustomTlsIssuer
+  label: Use your own TLS issuer
+  default: "false"
+  description: "Use your own TLS issuer"
+  type: boolean
+  group: "General settings"
+  show_subquestion_if: true
+  subquestions:
+  - variable: customTlsIssuer
+    label: TLS issuer
+    description: "Name of the cluster issuer to use"
+    type: string
+    required: false
+- variable: global.tlsIssuer
+  show_if: "useCustomTlsIssuer=false"
+  label: TLS issuer
+  description: "Name of the predefined cluster issuer to use"
+  type: enum
+  required: false
+  group: "General settings"
+  options:
+    - "epinio-ca"
+    - "selfsigned-issuer"
+    - "letsencrypt-production"

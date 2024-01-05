@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ (split "/" $.Template.Name)._2 }}
+spec:
+  selector:
+    app: {{ (split "/" $.Template.Name)._2 }}
+  ports:
+    - protocol: TCP
+      name: phpmyadmin
+      port: {{ .Values.phpmyadmin.service.port }}
+      targetPort: {{ .Values.phpmyadmin.service.port }}
+  type: {{ .Values.phpmyadmin.service.type }}
