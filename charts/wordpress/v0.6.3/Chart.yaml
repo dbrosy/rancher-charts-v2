@@ -3,3 +3,4 @@ name: wordpress
 version: 0.6.3
 description: A Helm chart for Wordpress Stack
 appVersion: 6.4.2
+icon: https://raw.githubusercontent.com/dbrosy/rancher-charts-v2/main/charts/wordpress/wordpress.png
