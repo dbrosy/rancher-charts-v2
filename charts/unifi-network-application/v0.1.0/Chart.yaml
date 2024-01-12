@@ -3,3 +3,4 @@ name: unifi-network-application
 version: 0.1.0
 description: A Helm chart Unifi Network Application
 appVersion: 8.0.24
+icon: https://raw.githubusercontent.com/dbrosy/rancher-charts-v2/main/charts/unifi-network-application/logo.png
