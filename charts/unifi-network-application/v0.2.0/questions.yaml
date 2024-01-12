@@ -3,9 +3,9 @@ labels:
 categories:
   - unifi
   - ubiquiti
-namespace: kiln-dev
+namespace: unifi
 questions:
-  - variable: ingress.enabled
+  - variable: unifi.ingress.enabled
     default: "false"
     description: "Enable Ingress"
     type: boolean
@@ -13,33 +13,33 @@ questions:
     label: Enable Ingress
     group: "Ingress"
     subquestions:
-      - variable: ingress.domainName
+      - variable: unifi.ingress.domainName
         default: ""
         description: "Domain Name"
         type: string
         label: "Domain Name"
-        show_if: "ingress.enabled=true"
-      - variable: ingress.hostname
+        show_if: "unifi.ingress.enabled=true"
+      - variable: unifi.ingress.hostname
         default: ""
         description: "Ingress Hostname"
         type: string
         label: "Ingress Hostname"
-        show_if: "ingress.enabled=true"
-  - variable: ingress.tls
+        show_if: "unifi.ingress.enabled=true"
+  - variable: unifi.ingress.tls
     default: "false"
     description: "Enable TLS on Ingress"
     type: boolean
     required: "false"
     label: Enable TLS
     group: "Ingress"
-    show_if: "ingress.enabled=true"
+    show_if: "unifi.ingress.enabled=true"
     subquestions:
       - variable: ingress.secretName
         default: ""
         description: "Ingress secretName"
         type: string
         label: "Ingress secretName"
-        show_if: "ingress.tls=true"
+        show_if: "unifi.ingress.tls=true"
   - variable: defaultImage
     default: "true"
     description: "Use default Docker image"
