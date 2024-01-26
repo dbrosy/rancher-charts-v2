@@ -1,0 +1,12 @@
+{{- if .Values.unifi.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ (split "/" $.Template.Name)._2 }}-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.unifi.persistence.size }}
+{{- end }}

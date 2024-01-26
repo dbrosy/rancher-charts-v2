@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ (split "/" $.Template.Name)._2 }}
+spec:
+  replicas: {{ .Values.unifi.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ (split "/" $.Template.Name)._2 }}
+  template:
+    metadata:
+      labels:
+        app: {{ (split "/" $.Template.Name)._2 }}
+    spec:
+      containers:
+      - name: {{ (split "/" $.Template.Name)._2 }}
+        image: "{{ .Values.unifi.image.repository }}:{{ .Values.unifi.image.tag }}"
+        imagePullPolicy: {{ .Values.unifi.image.pullPolicy }}
+        env:
+          - name: CERTNAME
+            value: tls.crt
+          - name: CERT_PRIVATE_NAME
+            value: tls.key
+          - name: CERT_IS_CHAIN
+            value: 'true'
+          - name: UNIFI_HTTPS_PORT
+            value: '8443'
+        ports:
+        - name: web-ui
+          containerPort: {{ .Values.unifi.service.webui.port }}
+          protocol: TCP
+        - name: device-comms
+          containerPort: {{ .Values.unifi.service.devicecomms.port }}
+          protocol: TCP
+        - name: stun
+          containerPort: {{ .Values.unifi.service.stun.port }}
+          protocol: UDP
+        volumeMounts:
+        - mountPath: /unifi
+          name: {{ (split "/" $.Template.Name)._2 }}-data
+        - mountPath: /unifi/cert
+          name: {{ (split "/" $.Template.Name)._2 }}-certificate
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999        
+      volumes:
+        - name: {{ (split "/" $.Template.Name)._2 }}-data
+          persistentVolumeClaim:
+            claimName: {{ (split "/" $.Template.Name)._2 }}-data
+        - name: {{ (split "/" $.Template.Name)._2 }}-certificate
+          secret:
+            defaultMode: 420
+            #secretName: {{ (split "/" $.Template.Name)._2 }}-lab-brosy-dev-tls
+            secretName: {{ $.Release.Name | replace "-" "." }}-tls
+      securityContext:
+        fsGroup: 999
