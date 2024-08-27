@@ -1,0 +1,65 @@
+labels:
+  io.cattle.role: project # options are cluster/project
+categories:
+  - unifi
+  - ubiquiti
+namespace: unifi
+questions:
+  - variable: unifi.ingress.enabled
+    default: "false"
+    description: "Enable Ingress"
+    type: boolean
+    required: "false"
+    label: Enable Ingress
+    group: "Ingress"
+    subquestions:
+      - variable: unifi.ingress.domainName
+        default: ""
+        description: "Domain Name"
+        type: string
+        label: "Domain Name"
+        show_if: "unifi.ingress.enabled=true"
+      - variable: unifi.ingress.hostname
+        default: ""
+        description: "Ingress Hostname"
+        type: string
+        label: "Ingress Hostname"
+        show_if: "unifi.ingress.enabled=true"
+  - variable: unifi.ingress.tls
+    default: "false"
+    description: "Enable TLS on Ingress"
+    type: boolean
+    required: "false"
+    label: Enable TLS
+    group: "Ingress"
+    show_if: "unifi.ingress.enabled=true"
+    subquestions:
+      - variable: ingress.secretName
+        default: ""
+        description: "Ingress secretName"
+        type: string
+        label: "Ingress secretName"
+        show_if: "unifi.ingress.tls=true"
+  - variable: defaultImage
+    default: "true"
+    description: "Use default Docker image"
+    label: Use Default Image
+    type: boolean
+    show_subquestion_if: false
+    group: "Container Images"
+    subquestions:
+      - variable: global.imageRegistry
+        default: ""
+        description: "Global Docker image registry"
+        type: string
+        label: Global Docker Image Registry
+      - variable: image.repository
+        default: "jacobalberty/unifi"
+        description: "Docker image name"
+        type: string
+        label: Unifi-Network-Application Image Name
+      - variable: image.tag
+        default: "v8.0.26"
+        description: "Docker image tag"
+        type: string
+        label: Unifi-Network-Application Image Tag
