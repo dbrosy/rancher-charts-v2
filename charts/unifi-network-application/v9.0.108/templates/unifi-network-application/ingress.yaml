@@ -1,0 +1,91 @@
+{{- if .Values.unifi.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ (split "/" $.Template.Name)._2 }}
+  labels:
+    {{- include "unifi.labels" . | nindent 4 }}
+  {{- with .Values.unifi.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.unifi.ingress.className }}
+  {{- if .Values.unifi.ingress.tls }}
+  tls:
+    {{- range .Values.unifi.ingress.tls }}
+    - hosts:
+        {{- if $.Values.unifi.ingress.domain }}
+        - {{ $.Values.unifi.ingress.domain | quote }}
+        {{- if $.Values.unifi.ingress.enableWWWHost }}
+        - {{ printf "www.%s" $.Values.unifi.ingress.domain | quote }}
+        {{- end }}
+        {{- else }}
+        - {{ $.Release.Name | replace "-" "." | quote }}
+        {{- if $.Values.unifi.ingress.enableWWWHost }}
+        - {{ printf "www.%s" $.Release.Name | replace "-" "." | quote }}
+        {{- end }}        
+        {{- end }}
+      {{- if $.Values.unifi.ingress.domain }}
+      secretName: {{ $.Values.unifi.ingress.domain }}-tls
+      {{- else }}
+      secretName: {{ $.Release.Name | replace "-" "." }}-tls
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.unifi.ingress.hosts }}
+    {{- if $.Values.unifi.ingress.domain }}
+    - host: {{ $.Values.unifi.ingress.domain | quote }}
+    {{- else }}
+    - host: {{ $.Release.Name | replace "-" "." | quote }}
+    {{- end }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: unifi
+                port:
+                  number: 8443
+          {{- end }}
+    {{- range .Values.unifi.ingress.hosts }}
+    {{- if $.Values.unifi.ingress.domain }}
+    - host: {{ $.Values.unifi.ingress.domain | quote }}
+    {{- else }}
+    - host: {{ $.Release.Name | replace "-" "." | quote }}
+    {{- end }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: unifi
+                port:
+                  number: 8080
+          {{- end }}
+    {{- range .Values.unifi.ingress.hosts }}
+    {{- if $.Values.unifi.ingress.domain }}
+    - host: {{ $.Values.unifi.ingress.domain | quote }}
+    {{- else }}
+    - host: {{ $.Release.Name | replace "-" "." | quote }}
+    {{- end }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: unifi
+                port:
+                  number: 3478
+          {{- end }}
+    {{- end }}
