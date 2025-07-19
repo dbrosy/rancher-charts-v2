@@ -1,0 +1,6 @@
+apiVersion: v2
+name: unifi-network-application
+version: 9.3.43
+description: A Helm chart Unifi Network Application
+appVersion: 9.3.43
+icon: https://raw.githubusercontent.com/dbrosy/rancher-charts-v2/main/charts/unifi-network-application/logo.png
