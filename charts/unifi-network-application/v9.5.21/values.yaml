@@ -1,0 +1,43 @@
+global:
+
+unifi:
+  replicaCount: 1
+
+  image:
+    repository: jacobalberty/unifi
+    tag: v9.5.21
+    pullPolicy: IfNotPresent
+
+  service:
+    type: LoadBalancer
+    webui:
+      port: 8443
+    devicecomms:
+      port: 8080
+    stun:
+      port: 3478     
+
+  persistence:
+    enabled: true
+    size: 20Gi
+
+  ingress:
+    enabled: true
+    enableWWWHost: false
+    domain: ""
+    className: ""
+    annotations:
+      # kubernetes.io/ingress.class: traefik
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific      
+    tls:
+      - secretName: chart-example-tls
+        hosts:
+          - chart-example.local
+
+  mysql_root_password: notused
