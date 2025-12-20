@@ -1,0 +1,14 @@
+apiVersion: v2
+appVersion: 2.8.0
+description: A Helm chart for InfluxDB v2
+name: influxdb
+home: https://www.influxdata.com/products/influxdb/
+keywords:
+  - database
+  - timeseries
+type: application
+version: 2.8.0
+maintainers:
+  - name: dbrosy
+    email: code@brosy.com
+icon: https://avatars0.githubusercontent.com/u/5713248?s=200&v=4
