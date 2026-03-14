@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ (split "/" $.Template.Name)._2 }}
+spec:
+  replicas: {{ .Values.mariadb.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ (split "/" $.Template.Name)._2 }}
+  template:
+    metadata:
+      labels:
+        app: {{ (split "/" $.Template.Name)._2 }}
+    spec:
+      containers:
+      - name: {{ (split "/" $.Template.Name)._2 }}
+        image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
+        imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.redis.service.port }}
+          name: {{ (split "/" $.Template.Name)._2 }}
+        volumeMounts:
+          - mountPath: /data
+            name: {{ (split "/" $.Template.Name)._2 }}-data
+      volumes:
+        - name: {{ (split "/" $.Template.Name)._2 }}-data
+          persistentVolumeClaim:
+            claimName: {{ (split "/" $.Template.Name)._2 }}
