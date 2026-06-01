@@ -13,3 +13,4 @@ data:
     max_input_time = 180
     max_input_vars = 3000
     default_socket_timeout = 300
+{{- end }}

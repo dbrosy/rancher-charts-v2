@@ -5,7 +5,7 @@ mariadb:
 
   image:
     repository: mariadb
-    tag: 12.3.2
+    tag: 12.2.2
     pullPolicy: IfNotPresent
 
   service:
