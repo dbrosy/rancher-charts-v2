@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ (split "/" $.Template.Name)._2 }}
+spec:
+  replicas: {{ .Values.wordpress.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ (split "/" $.Template.Name)._2 }}
+  template:
+    metadata:
+      labels:
+        app: {{ (split "/" $.Template.Name)._2 }}
+    spec:
+      containers:
+      - name: {{ (split "/" $.Template.Name)._2 }}
+        image: "{{ .Values.wordpress.image.repository }}:{{ .Values.wordpress.image.tag }}"
+        imagePullPolicy: {{ .Values.wordpress.image.pullPolicy }}
+        env:          
+          - name: "WORDPRESS_DB_HOST"
+            valueFrom:
+              secretKeyRef:
+                name: mariadb-auth
+                key:  mysql_database
+          - name: "WORDPRESS_DB_USER"
+            valueFrom:
+              secretKeyRef:
+                name: mariadb-auth
+                key:  mysql_user
+          - name: "WORDPRESS_DB_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                name: mariadb-auth
+                key:  mysql_password
+        ports:
+        - containerPort: {{ .Values.wordpress.service.port }}
+          name: {{ (split "/" $.Template.Name)._2 }}
+        volumeMounts:
+          - mountPath: /var/www/html
+            name: {{ (split "/" $.Template.Name)._2 }}-data
+          - mountPath: /usr/local/etc/php/conf.d/uploads.ini
+            name: {{ (split "/" $.Template.Name)._2 }}-php-uploads
+            subPath: uploads.ini
+      volumes:
+        - name: {{ (split "/" $.Template.Name)._2 }}-data
+          persistentVolumeClaim:
+            claimName: {{ (split "/" $.Template.Name)._2 }}
+        - configMap:
+            defaultMode: 420
+            name: {{ (split "/" $.Template.Name)._2 }}-php-uploads
+          name: {{ (split "/" $.Template.Name)._2 }}-php-uploads

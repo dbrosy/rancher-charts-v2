@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ (split "/" $.Template.Name)._2 }}
+spec:
+  replicas: {{ .Values.mariadb.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ (split "/" $.Template.Name)._2 }}
+  template:
+    metadata:
+      labels:
+        app: {{ (split "/" $.Template.Name)._2 }}
+    spec:
+      containers:
+      - name: {{ (split "/" $.Template.Name)._2 }}
+        image: "{{ .Values.mariadb.image.repository }}:{{ .Values.mariadb.image.tag }}"
+        imagePullPolicy: {{ .Values.mariadb.image.pullPolicy }}
+        env:          
+          - name: "MYSQL_ROOT_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                key:  mysql_root_password
+                name: {{ (split "/" $.Template.Name)._2 }}-auth
+          - name: "MYSQL_DATABASE"
+            value: wordpress
+          - name: "MYSQL_USER"
+            value: wordpress
+          - name: "MYSQL_PASSWORD"
+            value: wordpress
+        ports:
+        - containerPort: {{ .Values.mariadb.service.port }}
+          name: {{ (split "/" $.Template.Name)._2 }}
+        volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: {{ (split "/" $.Template.Name)._2 }}-data
+      volumes:
+        - name: {{ (split "/" $.Template.Name)._2 }}-data
+          persistentVolumeClaim:
+            claimName: {{ (split "/" $.Template.Name)._2 }}
