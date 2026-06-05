@@ -1,0 +1,65 @@
+labels:
+  io.cattle.role: project # options are cluster/project
+categories:
+  - Node-Red
+  - nodered
+namespace: kiln-dev
+questions:
+  - variable: ingress.enabled
+    default: "false"
+    description: "Enable Ingress"
+    type: boolean
+    required: "false"
+    label: Enable Ingress
+    group: "Ingress"
+    subquestions:
+      - variable: ingress.domainName
+        default: ""
+        description: "Domain Name"
+        type: string
+        label: "Domain Name"
+        show_if: "ingress.enabled=true"
+      - variable: ingress.hostname
+        default: ""
+        description: "Ingress Hostname"
+        type: string
+        label: "Ingress Hostname"
+        show_if: "ingress.enabled=true"
+  - variable: ingress.tls
+    default: "false"
+    description: "Enable TLS on Ingress"
+    type: boolean
+    required: "false"
+    label: Enable TLS
+    group: "Ingress"
+    show_if: "ingress.enabled=true"
+    subquestions:
+      - variable: ingress.secretName
+        default: ""
+        description: "Ingress secretName"
+        type: string
+        label: "Ingress secretName"
+        show_if: "ingress.tls=true"
+  - variable: defaultImage
+    default: "true"
+    description: "Use default Docker image"
+    label: Use Default Image
+    type: boolean
+    show_subquestion_if: false
+    group: "Container Images"
+    subquestions:
+      - variable: global.imageRegistry
+        default: ""
+        description: "Global Docker image registry"
+        type: string
+        label: Global Docker Image Registry
+      - variable: image.repository
+        default: "nodered/node-red"
+        description: "Docker image name"
+        type: string
+        label: Node-Red Image Name
+      - variable: image.tag
+        default: "1.3.5-12-minimal"
+        description: "Docker image tag"
+        type: string
+        label: Node-Red Image Tag

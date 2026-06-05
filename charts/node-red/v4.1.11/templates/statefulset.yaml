@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "nodered.fullname" . }}
+  labels:
+    {{ include "nodered.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "nodered.selectorLabels" . | nindent 6 }}
+  serviceName: "{{ include "nodered.fullname" . }}"
+  template:
+    metadata:
+      labels:
+      {{- include "nodered.selectorLabels" . | nindent 8 }}
+      annotations:
+      {{- toYaml .Values.podAnnotations | nindent 8 }}
+    spec:
+      volumes:
+        - name: data
+        {{- if .Values.persistence.enabled }}
+          {{- if not (empty .Values.persistence.name) }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.name }}
+          {{- else }}
+          persistentVolumeClaim:
+            claimName: {{ template "nodered.fullname" . }}
+          {{- end }}
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+        - configMap:
+            defaultMode: 420
+            name: {{ template "nodered.fullname" . }}
+          name: settings
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: {{ .Values.service.portName }}
+              containerPort: 1880
+              protocol: TCP
+          env:
+            - name: FLOWS
+              value: "{{ .Values.flows }}"
+            - name: NODE_RED_ENABLE_SAFE_MODE
+              value: "{{ .Values.safeMode }}"
+            - name: NODE_RED_ENABLE_PROJECTS
+              value: "{{ .Values.enableProjects }}"
+            - name: NODE_OPTIONS
+              value: "{{ .Values.nodeOptions }}"
+            - name: TZ
+              value: "{{ .Values.timezone }}"
+            {{- with .Values.extraEnvs }}
+            {{ toYaml . | indent 12 }}
+            {{- end }}
+            - name: DOCKER_nodered_INIT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.adminUser.existingSecret }}
+                  name: {{ .Values.adminUser.existingSecret -}}
+                  {{ else }}
+                  name: {{ template "nodered.fullname" . }}-auth
+                  {{- end }}
+                  key: admin-password
+            # Extra environment variables from .Values.env
+            {{- with .Values.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.securityContext }}
+          securityContext:
+            {{ toYaml .Values.securityContext | nindent 12 }}
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.livenessProbePath }}
+              port: http
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.readinessProbePath }}
+              port: http
+          volumeMounts:
+          - mountPath: {{ .Values.persistence.mountPath }}
+            name: data
+          - mountPath: /data/settings.js
+            name: settings
+            subPath: settings.js                     
+          resources:
+            {{ .Values.resources | toYaml | nindent 12 | trim }}
+
+      {{- if .Values.securityContext.runAsGroup }}
+      securityContext:
+        fsGroup: {{ .Values.securityContext.runAsGroup }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{ toYaml . | nindent 8 | trim }}
+      {{- end }}
+
+      {{- with .Values.affinity }}
+      affinity:
+        {{ toYaml . | nindent 8 | trim }}
+      {{- end }}
+
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{ toYaml . | nindent 8 | trim }}
+      {{- end }}
